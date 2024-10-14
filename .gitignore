@@ -4,3 +4,6 @@
 electrum_os.py
 03_plots.ipynb
 04_tmaps.ipynb
+
+/data
+/datasets
