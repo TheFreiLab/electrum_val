@@ -1,4 +1,4 @@
-smiles,Name,LigandSmiles,Metal,bondorder,oxidation_states,oxidation_states_classification
+smiles,Name,LigandSmiles,Metal,bondorder,oxidation_states,classification
 O=[C]->[Mn+]12(<-[C]=O)(<-[C]=O)<-n3c(NP->1(c1ccccc1)c1ccccc1)cccc3NP->2(c1ccccc1)c1ccccc1,SOHJAA,C#O.C#O.C#O.c1ccc(P(Nc2cccc(NP(c3ccccc3)c3ccccc3)n2)c2ccccc2)cc1,Mn,6.0,+1,0
 CCn1ccn(->[Ag+]<-n2ccn(CC)c2)c1,APIRAU,CCn1ccnc1.CCn1ccnc1,Ag,2.0,+1,0
 c1ccc(CCN23->[Cu+]<-n4ccccc4CCN(CCC2)CC3)cc1,JOPZUL,c1ccc(CCN2CCCN(CCc3ccccn3)CC2)cc1,Cu,3.0,+1,0

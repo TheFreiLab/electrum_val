@@ -1,4 +1,4 @@
-Name,LigandSmiles,Metal,bondorder
+Name,LigandSmiles,Metal,classification
 ACIMEF,COC(=O)C(C=Nc1c(C)cccc1C)=CP(c1ccccc1)c1ccccc1.C[Si](C)(C)c1cccc1.C[Si](C)(C)c1cccc1,Nb,12.0
 ACIZER,CC(C)(C)c1cc(C(C)(C)C)nn1.CC(C)(C)c1cc(C(C)(C)C)nn1.CC(C)(C)c1cc(C(C)(C)C)nn1.Cc1nnc(C)n1.Cc1nnc(C)n1,Nb,8.0
 ACIZOB,CC(C)(C)c1cc(C(C)(C)C)nn1.CC(C)(C)c1cc(C(C)(C)C)nn1.CC(C)(C)c1cc(C(C)(C)C)nn1.c1ccc(c2nnnn2)cc1.c1ccc(c2nnnn2)cc1,Nb,8.0
