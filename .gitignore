@@ -3,6 +3,6 @@ __pycache__
 /data
 /datasets
 
-figures/*
+figures/tmaps/*
 !figures/tmaps/.gitkeep
 !figures/tmaps/*.pkl
