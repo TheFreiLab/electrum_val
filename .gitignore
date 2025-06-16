@@ -1,11 +1,8 @@
-/archive
-/figures
-
-01_clean_datasets.ipynb
-03_plots.ipynb
-04_tmaps.ipynb
+__pycache__
 
 /data
 /datasets
 
-__pycache__
+figures/*
+!figures/tmaps/.gitkeep
+!figures/tmaps/*.pkl
