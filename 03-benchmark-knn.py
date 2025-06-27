@@ -2,11 +2,13 @@ import numpy as np
 import pandas as pd
 import argparse
 import os
+import multiprocessing
+from joblib import Parallel, delayed
 
 from sklearn.model_selection import StratifiedGroupKFold
-from sklearn.neural_network import MLPClassifier
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.metrics import roc_auc_score, average_precision_score, accuracy_score, precision_score, recall_score, f1_score
+from sklearn.neighbors import KNeighborsClassifier
 
 from electrum import calculate_fingerprints as fp_electrum
 from electrum_ligands import calculate_fingerprints as fp_ligands
@@ -29,22 +31,41 @@ def calculate_metrics(y_true, y_pred, y_true_onehot, y_pred_onehot):
     }
 
 def run_cv(X, y, groups, n_splits=3, seed=42):
-    model = MLPClassifier(hidden_layer_sizes=(512, 256, 128, 64, 32), max_iter=1000, random_state=seed)
     kf = StratifiedGroupKFold(n_splits=n_splits, shuffle=True, random_state=seed)
     lb = LabelBinarizer().fit(y)
-
     results = []
-    for train_idx, test_idx in kf.split(X, y, groups):
-        model.fit(X[train_idx], y[train_idx])
-        y_pred = model.predict(X[test_idx])
 
+    for train_idx, test_idx in kf.split(X, y, groups):
+        X_train, X_test = X[train_idx], X[test_idx]
+
+        model = KNeighborsClassifier(n_neighbors=5, metric='manhattan', n_jobs=1)
+        model.fit(X_train, y[train_idx])
+        y_pred = model.predict(X_test)
         y_true_1hot = lb.transform(y[test_idx])
         y_pred_1hot = lb.transform(y_pred)
-
         metrics = calculate_metrics(y[test_idx], y_pred, y_true_1hot, y_pred_1hot)
         results.append(metrics)
 
     return pd.DataFrame(results)
+
+def benchmark_fingerprint(fp_func, name, n_bits, df):
+    print(f'Processing fingerprint: {name} ({n_bits} bits)')
+    X = np.array(fp_func(df['LigandSmiles'], df['Metal'], radius=2, n_bits=n_bits))
+    y_true = np.array(df['classification'])
+    groups = df['LigandSmiles']
+
+    df_true = run_cv(X, y_true, groups)
+    mean = df_true.mean() * 100
+    std = df_true.std() * 100
+    results = {f'{name}_{n_bits}': [f'{m:.1f} ± {s:.2f}' for m, s in zip(mean, std)]}
+
+    y_scrambled = np.random.permutation(y_true)
+    df_scrambled = run_cv(X, y_scrambled, groups)
+    mean_s = df_scrambled.mean() * 100
+    std_s = df_scrambled.std() * 100
+    results[f'{name}_{n_bits}_scrambled'] = [f'{m:.1f} ± {s:.2f}' for m, s in zip(mean_s, std_s)]
+
+    return results
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -62,33 +83,27 @@ if __name__ == '__main__':
     }
 
     bit_sizes = [256, 512, 1024]
-    summary = {}
 
+    tasks = []
     for name, fp_func in fingerprints.items():
         for n_bits in bit_sizes:
-            print(f'Processing fingerprint: {name} ({n_bits} bits)')
+            tasks.append(delayed(benchmark_fingerprint)(fp_func, name, n_bits, df))
 
-            X = np.array(fp_func(df['LigandSmiles'], df['Metal'], radius=2, n_bits=n_bits))
-            y_true = np.array(df['classification'])
-            groups = df['LigandSmiles']
+    n_jobs = min(8, multiprocessing.cpu_count())
+    results = Parallel(n_jobs=n_jobs)(tasks)
 
-            # True labels
-            df_true = run_cv(X, y_true, groups)
-            mean = df_true.mean() * 100
-            std = df_true.std() * 100
-            summary[f'{name}_{n_bits}'] = [f'{m:.1f} ± {s:.2f}' for m, s in zip(mean, std)]
+    summary = {}
+    for r in results:
+        summary.update(r)
 
-            # Scrambled labels
-            y_scrambled = np.random.permutation(y_true)
-            df_scrambled = run_cv(X, y_scrambled, groups)
-            mean_s = df_scrambled.mean() * 100
-            std_s = df_scrambled.std() * 100
-            summary[f'{name}_{n_bits}_scrambled'] = [f'{m:.1f} ± {s:.2f}' for m, s in zip(mean_s, std_s)]
-
-    summary_df = pd.DataFrame.from_dict(summary, orient='index', columns=mean.index)
+    summary_df = pd.DataFrame.from_dict(summary, orient='index', columns=[
+        'roc_auc_ovr_macro', 'roc_auc_ovr_weighted', 'prc_auc_macro', 'prc_auc_weighted',
+        'accuracy', 'precision_macro', 'precision_weighted',
+        'recall_macro', 'recall_weighted', 'f1_macro', 'f1_weighted'])
     summary_df.index.name = 'Fingerprint'
 
     base = os.path.splitext(os.path.basename(args.file))[0]
-    out_path = f'results/{base}_benchmark.csv'
+    out_path = f'results/{base}_knn_benchmark.csv'
+    os.makedirs('results', exist_ok=True)
     summary_df.to_csv(out_path)
     print(f'Saved: {out_path}')

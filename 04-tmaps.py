@@ -3,8 +3,10 @@ import joblib
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 import tmap as tm
+from faerun import Faerun
 from electrum import calculate_fingerprints
 from sklearn.neighbors import NearestNeighbors
 from matplotlib.patches import Patch
@@ -14,7 +16,7 @@ plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams.update({'font.size': 10})
 
 
-def compute_layout(fps, path, knn=500):
+def compute_layout(fps, path, knn=15):
     if os.path.exists(path):
         return joblib.load(path)
 
@@ -61,6 +63,52 @@ def plot_tmap(x, y, s, t, color_labels, legend_values, legend_labels, cmap, out_
     plt.close()
 
 
+def plot_interactive_tmap(x, y, s, t, dataframe, category, out_path):
+
+    category_labels, category_data = Faerun.create_categories(dataframe[category])
+    colormap = cm.get_cmap('turbo', len(dataframe[category].unique()))
+
+    labels = []
+    for i, row in dataframe.iterrows():
+        labels.append(
+                row["LigandSmiles"]
+                + "__"
+                + f'{row["Name"]}'
+                + "__ "
+                + f'<a target="_blank" href="https://www.ccdc.cam.ac.uk/structures/Search?Ccdcid={row["Name"]}&DatabaseToSearch=Published">CSD Entry</a><br>'
+            )
+
+    f = Faerun(
+        view="front", 
+        coords=False,
+        title="",
+        clear_color='#FFFFFF',
+    )
+
+    f.add_scatter(
+        "TMAP",
+        {
+            "x": tm.VectorFloat(x),
+            "y": tm.VectorFloat(y),
+            "c": [
+                category_data,
+                ], 
+            "labels": labels,
+        },
+        shader="smoothCircle",
+        point_scale=2,
+        max_point_size=20,
+        legend_labels=[category_labels],
+        categorical=[True],
+        colormap=[colormap],
+        series_title=[category],
+        has_legend=True,
+    )
+
+    f.add_tree("TMAP_tree", {"from": tm.VectorUint(s), "to": tm.VectorUint(t)}, point_helper="TMAP")
+    f.plot(out_path, template='smiles')
+
+
 if __name__ == '__main__':
     os.makedirs('figures/tmaps', exist_ok=True)
 
@@ -68,16 +116,16 @@ if __name__ == '__main__':
     df_os = pd.read_csv('datasets/oxidationstate_46k.csv', dtype={'oxidation_states': str})
     df_os = df_os.sort_values('oxidation_states').drop_duplicates(subset='smiles').sample(frac=1, random_state=42).reset_index(drop=True)
 
+    unique_labels = sorted(df_os['oxidation_states'].unique(), key=lambda x: float(x.replace('+', '')))
+    label_to_float = {label: float(label.replace('+', '')) for label in unique_labels}
+    df_os['oxidation_state_float'] = df_os['oxidation_states'].map(label_to_float)
+
+    classes_os = df_os['oxidation_state_float']
+    legend_vals = list(label_to_float.values())
+    legend_labels = list(label_to_float.keys())
+
     fps_os = np.array(calculate_fingerprints(df_os['LigandSmiles'], df_os['Metal'], radius=2, n_bits=512))
     layout_os = compute_layout(fps_os, 'figures/tmaps/oxidationstate_layout.pkl')
-
-    classes_os = df_os['classification']
-    oxidation_state_labels = df_os['oxidation_states'].astype(str).unique()
-    class_order = sorted(df_os['classification'].unique())
-    oxidation_label_map = dict(zip(class_order, sorted(df_os['oxidation_states'].astype(str).unique(), key=lambda x: int(x))))
-
-    legend_vals = class_order
-    legend_labels = [f'+{oxidation_label_map[c]}' if oxidation_label_map[c] != '0' else '0' for c in class_order]
 
     plot_tmap(
         x=layout_os['x'],
@@ -90,6 +138,16 @@ if __name__ == '__main__':
         cmap='turbo',
         out_path='figures/tmaps/oxidationstate_tmap.png',
         title='Oxidation State'
+    )
+
+    plot_interactive_tmap(
+        x=layout_os['x'],
+        y=layout_os['y'],
+        s=layout_os['s'],
+        t=layout_os['t'],
+        dataframe=df_os,
+        category='oxidation_states',
+        out_path='figures/tmaps/oxidationstate_tmap'
     )
 
     # --- Coordination Number ---
@@ -116,4 +174,14 @@ if __name__ == '__main__':
         out_path='figures/tmaps/coordnumber_tmap.png',
         title='Coordination Number',
         linewidth=0.1
+    )
+
+    plot_interactive_tmap(
+        x=layout_cn['x'],
+        y=layout_cn['y'],
+        s=layout_cn['s'],
+        t=layout_cn['t'],
+        dataframe=df_cn,
+        category='classification',
+        out_path='figures/tmaps/coordnumber_tmap'
     )
