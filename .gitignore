@@ -174,9 +174,6 @@ cython_debug/
 .pypirc
 
 # directories
-datasets/*
-!logs/.gitkeep
-
 figures/tmaps/*
 !figures/tmaps/.gitkeep
 !figures/tmaps/*.pkl
