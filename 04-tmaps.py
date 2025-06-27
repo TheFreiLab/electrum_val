@@ -73,8 +73,16 @@ def plot_interactive_tmap(x, y, s, t, dataframe, category, out_path):
         labels.append(
                 row["LigandSmiles"]
                 + "__"
+                + '<small style="color:grey;">Metal</small>'
+                + '__'
+                + f'{row["Metal"]}'
+                + "__ "
+                + '<small style="color:grey;">CSD ID</small>'
+                + '__'
                 + f'{row["Name"]}'
                 + "__ "
+                + f'<small style="color:grey;">Link to CSD</small>'
+                + '__'
                 + f'<a target="_blank" href="https://www.ccdc.cam.ac.uk/structures/Search?Ccdcid={row["Name"]}&DatabaseToSearch=Published">CSD Entry</a><br>'
             )
 
