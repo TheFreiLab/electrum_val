@@ -1,23 +1,121 @@
-# ELECTRUM Fingerprint Validation (WIP)
+# Electrum Benchmarking Suite
 
-Welcome to the repository for the validation and evaluation of the **ELECTRUM Fingerprint**! This repository is a **work-in-progress** (WIP) and currently hosts the code and datasets used to test and assess the performance of the ELECTRUM fingerprint. Find the ELECTRUM preprint [here](https://doi.org/10.26434/chemrxiv-2024-vqktn).
+This repository contains benchmarking and visualization tools for evaluating custom molecular fingerprints designed for transition metal complexes. These fingerprints encode ligand environments and metal identity, enabling classification and regression tasks such as predicting coordination numbers, oxidation states, or quantum mechanical properties.
 
-## About This Repo
+## Project Overview
 
-This repository is primarily aimed at providing a platform to **evaluate and test the ELECTRUM fingerprint**. A more polished and finalized version of the fingerprint, along with additional features, will be released in a separate repository in the near future.
+The core goal is to benchmark and visualize four types of fingerprints:
+- `electrum`: metal-aware molecular fingerprints
+- `electrum_ligands`: ligand-only fingerprints
+- `electrum_atomic`: fingerprints derived from atom-level features
+- `electrum_onehot`: simple one-hot encoded representations
 
-Please note that the code and data here are still being refined, and as such, you may encounter incomplete features or areas that require optimization.
+These are tested across datasets for classification (e.g., coordination number, oxidation state) and regression (e.g., HOMO/LUMO energies, dipole moment).
 
-## Contributions and Feedback
+## Directory Structure
 
-We are **actively looking for suggestions and feedback** to help us improve this approach. Whether it's about the overall methodology, specific code improvements, or new ideas on how to enhance the fingerprint, we are very open to your input.
+```plaintext
+├── 01-benchmark.py              # MLP classification benchmark
+├── 02-benchmark-regression.py   # MLP regression benchmark
+├── 03-benchmark-knn.py          # k-NN classification benchmark
+├── 04-tmaps.py                  # TMAP visualization script
+├── electrum*.py                 # Fingerprint generators
+├── datasets/                    # Input CSVs (coordination, oxidation, QM data)
+├── figures/tmaps/               # Output TMAP visualizations
+├── results/                     # CSVs of benchmark results
+├── notebook.ipynb               # Optional exploration notebook
+├── LICENSE
+├── README.md
+```
 
-We strive to stay active on **pull requests** and aim to create a collaborative environment. So, if you have suggestions, feel free to submit a PR, and we will get back to you as soon as possible.
+## Installation
 
-## Reporting Issues
+You can set up the environment using:
 
-If you encounter any bugs or issues, or if something isn't working as expected, please let us know by opening an issue on this repository. Your feedback is invaluable in helping us improve the project!
+```bash
+pip install -r requirements.txt
+```
 
-## License
+Dependencies include:
+- `scikit-learn`
+- `joblib`
+- `pandas`, `numpy`
+- `matplotlib`
+- `tmap` and `faerun` for visualizations
 
-This repository is licensed under the MIT License. See the `LICENSE` file for more information.
+## How to Run Benchmarks
+
+### 1. Classification with MLP
+
+```bash
+python 01-benchmark.py --file datasets/oxidationstate_46k.csv
+```
+
+This benchmarks multiple fingerprint types and sizes (256, 512, 1024 bits) on a classification task, and compares to a scrambled label baseline. Output is saved to:
+
+```
+results/oxidationstate_46k_benchmark.csv
+```
+
+### 2. Regression with MLP
+
+```bash
+python 02-benchmark-regression.py --file datasets/tmQMg.csv
+```
+
+This performs multi-target regression on ~20 QM properties using MLPs, with cross-validation and error reporting per target:
+
+```
+results/tmQMg_regression_benchmark.csv
+```
+
+### 3. Classification with k-NN
+
+```bash
+python 03-benchmark-knn.py --file datasets/oxidationstate_46k.csv
+```
+
+Uses a 5-NN classifier with Manhattan distance:
+
+```
+results/oxidationstate_46k_knn_benchmark.csv
+```
+
+## Visualizing Fingerprints with TMAP
+
+Generate both static and interactive 2D layouts of fingerprint similarity using:
+
+```bash
+python 04-tmaps.py
+```
+
+Outputs:
+- `figures/tmaps/coordnumber_tmap.png` — color-coded by coordination class
+- `figures/tmaps/oxidationstate_tmap.html` — interactive map with CSD links
+
+Please note that TMAP only works on python version 3.8 or lower. So to re-generate the TMAPs you will need to create a new virtual environment with python 3.8 and install the required dependencies.
+
+## Installation of ELECTRUM
+
+We have also created a package called `electrum-fp` that provides the fingerprinting functionality. You can install it via pip:
+
+```bash
+pip install electrum-fp
+```
+
+## Usage
+
+```python
+from electrum_fp.electrum import calculate_fingerprint
+
+ligands = "Cc1c(C)c(C)c(c2cccc3cccnc32)c1C.Cl.Cl"        # Ligand SMILES
+metal = "Rh"                                             # Corresponding metal
+
+fps = calculate_fingerprint(ligands, metal, radius=2, n_bits=512)
+print(fps) 
+``` 
+
+## Citation & License
+
+If you use this code in a publication, please cite appropriately (citation info coming soon).  
+This project is released under the MIT License.
