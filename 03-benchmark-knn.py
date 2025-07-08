@@ -13,7 +13,6 @@ from sklearn.neighbors import KNeighborsClassifier
 from electrum import calculate_fingerprints as fp_electrum
 from electrum_ligands import calculate_fingerprints as fp_ligands
 from electrum_atomic import calculate_fingerprints as fp_atomic
-from electrum_onehot import calculate_fingerprints as fp_onehot
 
 def calculate_metrics(y_true, y_pred, y_true_onehot, y_pred_onehot):
     return {
@@ -79,7 +78,6 @@ if __name__ == '__main__':
         'electrum': fp_electrum,
         'ligands': fp_ligands,
         'atomic': fp_atomic,
-        'onehot': fp_onehot,
     }
 
     bit_sizes = [256, 512, 1024]

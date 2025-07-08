@@ -12,7 +12,6 @@ from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 from electrum import calculate_fingerprints as fp_electrum
 from electrum_ligands import calculate_fingerprints as fp_ligands
 from electrum_atomic import calculate_fingerprints as fp_atomic
-from electrum_onehot import calculate_fingerprints as fp_onehot
 
 def calculate_regression_metrics(y_true, y_pred):
     return {
@@ -65,7 +64,6 @@ if __name__ == '__main__':
         'electrum': fp_electrum,
         'ligands': fp_ligands,
         'atomic': fp_atomic,
-        'onehot': fp_onehot,
     }
 
     bit_sizes = [1024]

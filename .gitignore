@@ -179,5 +179,8 @@ figures/tmaps/*
 !figures/tmaps/*.pkl
 !figures/tmaps/*.html
 
+results/*
+!results/.gitkeep
+
 # notebooks
 notebook.ipynb
