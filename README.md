@@ -8,7 +8,6 @@ The core goal is to benchmark and visualize four types of fingerprints:
 - `electrum`: metal-aware molecular fingerprints
 - `electrum_ligands`: ligand-only fingerprints
 - `electrum_atomic`: fingerprints derived from atom-level features
-- `electrum_onehot`: simple one-hot encoded representations
 
 These are tested across datasets for classification (e.g., coordination number, oxidation state) and regression (e.g., HOMO/LUMO energies, dipole moment).
 
