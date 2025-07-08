@@ -178,6 +178,7 @@ figures/tmaps/*
 !figures/tmaps/.gitkeep
 !figures/tmaps/*.pkl
 !figures/tmaps/*.html
+!figures/tmaps/*.md
 
 results/*
 !results/.gitkeep
