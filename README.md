@@ -1,4 +1,4 @@
-# Electrum Benchmarking Suite
+# Electrum Benchmarking Repo
 
 This repository contains benchmarking and visualization tools for evaluating custom molecular fingerprints designed for transition metal complexes. These fingerprints encode ligand environments and metal identity, enabling classification and regression tasks such as predicting coordination numbers, oxidation states, or quantum mechanical properties.
 
