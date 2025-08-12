@@ -18,11 +18,11 @@ These are tested across datasets for classification (e.g., coordination number, 
 ├── 02-benchmark-regression.py   # MLP regression benchmark
 ├── 03-benchmark-knn.py          # k-NN classification benchmark
 ├── 04-tmaps.py                  # TMAP visualization script
+├── 05-walkthrough.ipynb         # Optional exploration notebook
 ├── electrum*.py                 # Fingerprint generators
 ├── datasets/                    # Input CSVs (coordination, oxidation, QM data)
 ├── figures/tmaps/               # Output TMAP visualizations
 ├── results/                     # CSVs of benchmark results
-├── notebook.ipynb               # Optional exploration notebook
 ├── LICENSE
 ├── README.md
 ```
@@ -80,7 +80,7 @@ Uses a 5-NN classifier with Manhattan distance:
 results/oxidationstate_46k_knn_benchmark.csv
 ```
 
-## Visualizing Fingerprints with TMAP
+## 4. Visualizing Fingerprints with TMAP
 
 Generate both static and interactive 2D layouts of fingerprint similarity using:
 
@@ -93,6 +93,16 @@ Outputs:
 - `figures/tmaps/oxidationstate_tmap.html` — interactive map with CSD links
 
 Please note that TMAP only works on python version 3.8 or lower. So to re-generate the TMAPs you will need to create a new virtual environment with python 3.8 and install the required dependencies.
+
+## 5. Walkthrough Notebook
+
+An optional Jupyter notebook (`05-walkthrough.ipynb`) provides a guided exploration of the code, including:
+
+- Overview of fingerprint generation
+- Effect of fingerprint parameters (`radius`, `n_bits`)
+- Batch processing of multiple complexes
+- Debugging tips for common issues
+- Example machine learning workflow with feature importances
 
 ## Installation of ELECTRUM
 
