@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import cm
+from matplotlib import colors as mcolors
 
 import tmap as tm
 from faerun import Faerun
@@ -14,7 +15,6 @@ from matplotlib.patches import Patch
 plt.rcParams['font.sans-serif'] = 'Menlo'
 plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams.update({'font.size': 10})
-
 
 def compute_layout(fps, path, knn=15):
     if os.path.exists(path):
@@ -62,35 +62,54 @@ def plot_tmap(x, y, s, t, color_labels, legend_values, legend_labels, cmap, out_
     plt.savefig(out_path, dpi=1200, bbox_inches='tight')
     plt.close()
 
+def plot_interactive_tmap(
+    x, y, s, t,
+    dataframe,
+    category,
+    legend_values,
+    legend_labels,
+    out_path,
+    cmap_name='turbo'
+):
+    value_to_index = {v: i for i, v in enumerate(legend_values)}
+    label_to_value = {lab: val for lab, val in zip(legend_labels, legend_values)}
 
-def plot_interactive_tmap(x, y, s, t, dataframe, category, out_path):
+    if dataframe[category].dtype == object:
+        row_numeric = dataframe[category].map(label_to_value).values
+    else:
+        row_numeric = dataframe[category].astype(float).values
 
-    category_labels, category_data = Faerun.create_categories(dataframe[category])
-    colormap = cm.get_cmap('turbo', len(dataframe[category].unique()))
+    category_data = [value_to_index[v] for v in row_numeric]
+    base_cmap = cm.get_cmap(cmap_name)
+    norm = plt.Normalize(vmin=min(legend_values), vmax=max(legend_values))
+    colors_hex = [mcolors.to_hex(base_cmap(norm(v))) for v in legend_values]
+    listed_cmap = mcolors.ListedColormap(colors_hex, name="locked_order_cmap")
 
     labels = []
-    for i, row in dataframe.iterrows():
+    for _, row in dataframe.iterrows():
         labels.append(
-                row["LigandSmiles"]
-                + "__"
-                + '<small style="color:grey;">Metal</small>'
-                + '__'
-                + f'{row["Metal"]}'
-                + "__ "
-                + '<small style="color:grey;">CSD ID</small>'
-                + '__'
-                + f'{row["Name"]}'
-                + "__ "
-                + f'<small style="color:grey;">Link to CSD</small>'
-                + '__'
-                + f'<a target="_blank" href="https://www.ccdc.cam.ac.uk/structures/Search?Ccdcid={row["Name"]}&DatabaseToSearch=Published">CSD Entry</a><br>'
-            )
+            row["LigandSmiles"]
+            + "__"
+            + '<small style="color:grey;">Metal</small>'
+            + '__'
+            + f'{row["Metal"]}'
+            + "__ "
+            + '<small style="color:grey;">CSD ID</small>'
+            + '__'
+            + f'{row["Name"]}'
+            + "__ "
+            + f'<small style="color:grey;">Link to CSD</small>'
+            + '__'
+            + f'<a target="_blank" href="https://www.ccdc.cam.ac.uk/structures/Search?Ccdcid={row["Name"]}&DatabaseToSearch=Published">CSD Entry</a><br>'
+        )
+
+    legend_spec = [[(i, lab) for i, lab in enumerate(legend_labels)]]
 
     f = Faerun(
-        view="front", 
+        view="front",
         coords=False,
         title="",
-        clear_color='#FFFFFF',
+        clear_color="#FFFFFF",
     )
 
     f.add_scatter(
@@ -98,24 +117,21 @@ def plot_interactive_tmap(x, y, s, t, dataframe, category, out_path):
         {
             "x": tm.VectorFloat(x),
             "y": tm.VectorFloat(y),
-            "c": [
-                category_data,
-                ], 
+            "c": [category_data],
             "labels": labels,
         },
         shader="smoothCircle",
         point_scale=2,
         max_point_size=20,
-        legend_labels=[category_labels],
+        legend_labels=legend_spec,       
         categorical=[True],
-        colormap=[colormap],
+        colormap=[listed_cmap],          
         series_title=[category],
         has_legend=True,
     )
 
     f.add_tree("TMAP_tree", {"from": tm.VectorUint(s), "to": tm.VectorUint(t)}, point_helper="TMAP")
-    f.plot(out_path, template='smiles')
-
+    f.plot(out_path, template="smiles")
 
 if __name__ == '__main__':
     os.makedirs('figures/tmaps', exist_ok=True)
@@ -154,7 +170,9 @@ if __name__ == '__main__':
         s=layout_os['s'],
         t=layout_os['t'],
         dataframe=df_os,
-        category='oxidation_states',
+        category='oxidation_states',          
+        legend_values=legend_vals,            
+        legend_labels=legend_labels,          
         out_path='figures/tmaps/oxidationstate_tmap'
     )
 
@@ -190,6 +208,8 @@ if __name__ == '__main__':
         s=layout_cn['s'],
         t=layout_cn['t'],
         dataframe=df_cn,
-        category='classification',
+        category='classification',            
+        legend_values=class_unique,           
+        legend_labels=legend_labels_cn,      
         out_path='figures/tmaps/coordnumber_tmap'
     )

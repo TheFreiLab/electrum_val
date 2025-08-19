@@ -14,11 +14,13 @@ These are tested across datasets for classification (e.g., coordination number, 
 ## Directory Structure
 
 ```plaintext
+├── 00-walkthrough.ipynb         # Optional exploration notebook
 ├── 01-benchmark.py              # MLP classification benchmark
 ├── 02-benchmark-regression.py   # MLP regression benchmark
 ├── 03-benchmark-knn.py          # k-NN classification benchmark
 ├── 04-tmaps.py                  # TMAP visualization script
-├── 05-walkthrough.ipynb         # Optional exploration notebook
+├── 05-dataset-analysis.py       # Statistics on datasets
+├── 06-composition-plots.py      # Plots for statistics
 ├── electrum*.py                 # Fingerprint generators
 ├── datasets/                    # Input CSVs (coordination, oxidation, QM data)
 ├── figures/tmaps/               # Output TMAP visualizations
@@ -96,7 +98,7 @@ Please note that TMAP only works on python version 3.8 or lower. So to re-genera
 
 ## 5. Walkthrough Notebook
 
-An optional Jupyter notebook (`05-walkthrough.ipynb`) provides a guided exploration of the code, including:
+An optional Jupyter notebook (`00-walkthrough.ipynb`) provides a guided exploration of the code, including:
 
 - Overview of fingerprint generation
 - Effect of fingerprint parameters (`radius`, `n_bits`)
