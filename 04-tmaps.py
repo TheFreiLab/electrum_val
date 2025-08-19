@@ -161,7 +161,8 @@ if __name__ == '__main__':
         legend_labels=legend_labels,
         cmap='turbo',
         out_path='figures/tmaps/oxidationstate_tmap.png',
-        title='Oxidation State'
+        title='Oxidation State',
+        linewidth=0.1
     )
 
     plot_interactive_tmap(
@@ -193,7 +194,7 @@ if __name__ == '__main__':
         y=layout_cn['y'],
         s=layout_cn['s'],
         t=layout_cn['t'],
-        color_labels=class_vals_cn,
+        color_labels=class_vals_cn, 
         legend_values=class_unique,
         legend_labels=legend_labels_cn,
         cmap='turbo',
