@@ -25,7 +25,7 @@ def _bar_from_series(s: pd.Series, title: str, xlabel: str, fname: str, max_item
     s = s.sort_values(ascending=False)
     if max_items is not None:
         s = s.head(max_items)
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(8, 4.5))
     ax.bar(range(len(s)), s.values)
     ax.set_xticks(range(len(s)))
     ax.set_xticklabels(s.index, rotation=rotate, ha='right')
@@ -38,15 +38,22 @@ def _heatmap(df: pd.DataFrame, title: str, fname: str):
     df_plot = df.copy()
     df_plot.index = df_plot.index.astype(str)
     df_plot.columns = df_plot.columns.astype(str)
+    data = df_plot.values.astype(float)
+    data[data == 0] = np.nan
+    cmap = plt.cm.viridis.copy()
+    cmap.set_bad(color="black")
 
-    fig = plt.figure(figsize=(max(6, 0.35*len(df_plot.columns)+2), max(6, 0.35*len(df_plot.index)+2)))
+    fig = plt.figure(figsize=(max(6, 0.35*len(df_plot.columns)+2),
+                              max(6, 0.35*len(df_plot.index)+2)))
     ax = fig.gca()
-    im = ax.imshow(df_plot.values, aspect='auto', interpolation='nearest')
+    im = ax.imshow(data, aspect='auto', interpolation='nearest', cmap=cmap)
+
     ax.set_xticks(np.arange(df_plot.shape[1]))
     ax.set_yticks(np.arange(df_plot.shape[0]))
     ax.set_xticklabels(df_plot.columns, rotation=90)
     ax.set_yticklabels(df_plot.index)
     ax.set_title(title)
+
     cbar = fig.colorbar(im, ax=ax)
     cbar.set_label('count')
     _save(fig, fname)
