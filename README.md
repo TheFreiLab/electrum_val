@@ -126,6 +126,12 @@ fps = calculate_fingerprint(ligands, metal, radius=2, n_bits=512)
 print(fps) 
 ``` 
 
+## Contributing
+
+We welcome contributions from the community! If you develop new fingerprint functions, add tutorials, improve documentation, or create new benchmark scripts, please consider submitting a pull request. Contributions that help others understand how you used, extended, or applied ELECTRUM are especially appreciated.
+
+Before contributing, please check the existing code and notebooks for style and structure to keep the repository consistent.
+
 ## Citation & License
 
 If you use this code in a publication, please cite appropriately (citation info coming soon).  
