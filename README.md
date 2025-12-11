@@ -134,5 +134,22 @@ Before contributing, please check the existing code and notebooks for style and 
 
 ## Citation & License
 
-If you use this code in a publication, please cite appropriately (citation info coming soon).  
+CCDC have reviewed the data and approved the publication. 
+
+If you use this code in a publication, please cite as follows: 
+
+```
+@Article{D5DD00145E,
+author ="Orsi, Markus and Frei, Angelo",
+title  ="ELECTRUM: an electron configuration-based universal metal fingerprint for transition metal compounds",
+journal  ="Digital Discovery",
+year  ="2025",
+volume  ="4",
+issue  ="12",
+pages  ="3567-3577",
+publisher  ="RSC",
+doi  ="10.1039/D5DD00145E"
+}
+```
+
 This project is released under the MIT License.
