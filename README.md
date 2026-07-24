@@ -1,5 +1,13 @@
 # Electrum Benchmarking Repo
 
+> **New — ELECTRUM v2 benchmark.** [`08-electrum-v2-benchmark.ipynb`](08-electrum-v2-benchmark.ipynb)
+> benchmarks the new graph-based, stereochemistry-aware ELECTRUM (`electrum-fp` v0.2.0) against
+> the published v1 [(DOI 10.1039/D5DD00145E)](https://doi.org/10.1039/D5DD00145E), written as a
+> self-contained Digital Discovery *Commit* article. It shows v2 reproduces v1 **bit-for-bit**,
+> newly **distinguishes stereoisomers** and is near-invariant to SMILES re-writing, and is
+> **statistically equivalent** to v1 on classification (paired TOST) while **target-dependent**
+> on regression. Run it with `QUICK = True` for a fast pass or `QUICK = False` for the full run.
+
 This repository contains benchmarking and visualization tools for evaluating custom molecular fingerprints designed for transition metal complexes. These fingerprints encode ligand environments and metal identity, enabling classification and regression tasks such as predicting coordination numbers, oxidation states, or quantum mechanical properties.
 
 ## Project Overview
